@@ -31,7 +31,7 @@ CLASS_BALANCE = False  # pondération inverse à la fréquence
 AUGMENT = True
 
 # Sorties
-MODEL_OUT = "models/hands_landmarks.h5"
+MODEL_OUT = "models/thumbs_landmarks.h5"
 LABEL_MAP_OUT = "models/label_map.json"
 
 # Divers
