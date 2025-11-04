@@ -1,0 +1,14 @@
+__pycache__/
+.pytest_cache/
+.idea/
+.vscode/
+*.pyc
+*.pyo
+*.pyd
+*.h5
+models/*.h5
+data/**/images_full/
+env/
+.env
+venv/
+*.log
