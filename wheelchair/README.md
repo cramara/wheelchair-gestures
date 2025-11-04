@@ -9,7 +9,7 @@
 
 ## Pré-requis
 ```bash
-# Recommandé: Python 3.11 (Windows). Créez un venv 3.11 puis installez:
+# Windows - Python 3.10 supporté (profil de versions adapté)
 pip install -r requirements.txt
 ```
 
@@ -54,8 +54,8 @@ python training/train_hands_model.py
 
 ### Astuce Windows (PowerShell)
 ```powershell
-# Créer un venv explicitement en Python 3.11
-py -3.11 -m venv .venv
+# Créer un venv en Python 3.10
+py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
