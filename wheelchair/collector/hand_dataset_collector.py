@@ -23,10 +23,10 @@ CLASS_NAMES = ["ThumbUp", "ThumbDown"]  # ou None pour auto-découverte
 CAMERA_INDEX = 0
 MIRROR = False
 
-# Sauvegarde
+# Sauvegarde (logique 3: landmarks uniquement par défaut)
 IMG_SIZE = 224
 SAVE_FULL = False          # sauvegarder aussi le crop original avant resize dans images_full/
-SAVE_FORMAT = "both"       # "both" | "images" | "landmarks"
+SAVE_FORMAT = "landmarks"  # "both" | "images" | "landmarks"
 
 # MediaPipe Hands
 MAX_HANDS = 1
@@ -232,7 +232,7 @@ def main() -> None:
 
             # UI infos
             cv2.putText(frame, f"Classe: {classes[active_idx]}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(frame, "A/D changer classe  | SPACE capture  | R rec", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
+            cv2.putText(frame, "A/D changer classe  | SPACE capture  | R rec (landmarks)", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
             cv2.putText(frame, "Q/ESC quitter", (10, 115), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
 
             # Enregistrement continu
