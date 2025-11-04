@@ -232,7 +232,7 @@ def main() -> None:
 
             # UI infos
             cv2.putText(frame, f"Classe: {classes[active_idx]}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(frame, "[ / ] changer classe  | SPACE capture  | R rec", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
+            cv2.putText(frame, "A/D changer classe  | SPACE capture  | R rec", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
             cv2.putText(frame, "Q/ESC quitter", (10, 115), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 255, 200), 1)
 
             # Enregistrement continu
@@ -246,9 +246,9 @@ def main() -> None:
             # Gestion clavier
             if key in (27, ord('q'), ord('Q')):
                 break
-            elif key == ord('['):
+            elif key in (ord('a'), ord('A')):
                 active_idx = (active_idx - 1) % len(classes)
-            elif key == ord(']'):
+            elif key in (ord('d'), ord('D')):
                 active_idx = (active_idx + 1) % len(classes)
             elif key in (ord('r'), ord('R')):
                 record_continuous = not record_continuous

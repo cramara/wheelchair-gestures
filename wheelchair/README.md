@@ -27,7 +27,7 @@ pip install -r requirements.txt
 python collector/hand_dataset_collector.py
 ```
 - Raccourcis clavier:
-  - `[` / `]` : changer de classe active
+  - `A` / `D` : changer de classe active
   - `SPACE`   : capturer un échantillon
   - `R`       : basculer enregistrement continu (à `CONTINUOUS_FPS`)
   - `Q` / `ESC`: quitter
