@@ -9,6 +9,7 @@
 
 ## Pré-requis
 ```bash
+# Recommandé: Python 3.11 (Windows). Créez un venv 3.11 puis installez:
 pip install -r requirements.txt
 ```
 
@@ -50,3 +51,12 @@ python training/train_hands_model.py
 ## Notes
 - Les landmarks sont normalisés: centrés au poignet et mis à l’échelle par une mesure de taille de main.
 - Ajoutez/retirez des classes en créant/supprimant des sous-dossiers dans `data/HandGestures`.
+
+### Astuce Windows (PowerShell)
+```powershell
+# Créer un venv explicitement en Python 3.11
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
