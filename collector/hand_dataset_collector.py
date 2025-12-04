@@ -27,6 +27,9 @@ MIRROR = False
 IMG_SIZE = 224
 SAVE_FULL = False          # sauvegarder aussi le crop original avant resize dans images_full/
 SAVE_FORMAT = "both"  # "both" | "images" | "landmarks"
+# Quand True, les images sauvegardées sont un squelette (points + segments) sur fond noir.
+# Quand False, on enregistre le crop réel de la main redimensionné.
+USE_SKELETON_IMAGE = True
 
 # MediaPipe Hands
 MAX_HANDS = 1
@@ -236,6 +239,67 @@ def render_hand_skeleton_image(lm_norm_xyz: np.ndarray, img_size: int = IMG_SIZE
     return canvas
 
 
+def render_hand_skeleton_from_bbox(
+    lm_img_xy: np.ndarray,
+    bbox: Tuple[int, int, int, int],
+    img_size: int = IMG_SIZE,
+) -> np.ndarray:
+    """
+    Génère une image squelette (points + segments) sur fond noir à partir
+    des coordonnées image (pixels) des landmarks et de la bbox utilisée
+    pour le crop.
+
+    L'idée est de garder la forme telle qu'on la voit dans l'image webcam,
+    mais sans le fond: on recadre dans la bbox et on remplit un carré img_size x img_size.
+    """
+    canvas = np.zeros((img_size, img_size, 3), dtype=np.uint8)
+
+    if lm_img_xy is None or lm_img_xy.shape[0] != 21:
+        return canvas
+
+    xmin, ymin, xmax, ymax = bbox
+    bw = max(1, xmax - xmin)
+    bh = max(1, ymax - ymin)
+
+    # Coordonnées normalisées dans la bbox
+    xs = (lm_img_xy[:, 0] - float(xmin)) / float(bw)
+    ys = (lm_img_xy[:, 1] - float(ymin)) / float(bh)
+
+    # Petite marge pour ne pas coller aux bords
+    margin = 0.05
+    xs = np.clip(xs, 0.0, 1.0)
+    ys = np.clip(ys, 0.0, 1.0)
+    xs_n = margin + xs * (1.0 - 2.0 * margin)
+    ys_n = margin + ys * (1.0 - 2.0 * margin)
+
+    xs_pix = xs_n * (img_size - 1)
+    ys_pix = ys_n * (img_size - 1)
+    pts_2d_int = np.stack([xs_pix.astype(np.int32), ys_pix.astype(np.int32)], axis=1)
+
+    connections = [
+        # Pouce
+        (0, 1), (1, 2), (2, 3), (3, 4),
+        # Index
+        (0, 5), (5, 6), (6, 7), (7, 8),
+        # Majeur
+        (0, 9), (9, 10), (10, 11), (11, 12),
+        # Annulaire
+        (0, 13), (13, 14), (14, 15), (15, 16),
+        # Auriculaire
+        (0, 17), (17, 18), (18, 19), (19, 20),
+    ]
+
+    for i0, i1 in connections:
+        p0 = tuple(pts_2d_int[i0])
+        p1 = tuple(pts_2d_int[i1])
+        cv2.line(canvas, p0, p1, (255, 255, 255), 2, lineType=cv2.LINE_AA)
+
+    for p in pts_2d_int:
+        cv2.circle(canvas, tuple(p), 3, (255, 255, 255), -1, lineType=cv2.LINE_AA)
+
+    return canvas
+
+
 def main() -> None:
     # Prépare les classes
     classes = CLASS_NAMES if CLASS_NAMES else discover_classes(DATASET_ROOT)
@@ -356,17 +420,24 @@ def main() -> None:
                         full_path = os.path.join(full_dir, f"{filename}.jpg")
                         cv2.imwrite(full_path, crop)
 
-                    # Normalisation des landmarks (pour le .npz et pour l'image squelette)
+                    # Normalisation des landmarks (pour le .npz et pour un éventuel post-traitement)
                     if lm_img_xyz is not None:
                         lm_norm = normalize_landmarks_xy_z(lm_img_xyz)
                     else:
                         lm_norm = None
 
-                    # Image squelette de la main sur fond uni
-                    if SAVE_FORMAT in ("both", "images") and lm_norm is not None:
-                        skeleton_img = render_hand_skeleton_image(lm_norm, IMG_SIZE)
+                    # Image enregistrée:
+                    # - si USE_SKELETON_IMAGE = True: squelette (points + segments) sur fond noir
+                    # - sinon: crop réel de la main redimensionné
+                    if SAVE_FORMAT in ("both", "images"):
+                        if USE_SKELETON_IMAGE and lm_img is not None:
+                            skeleton_img = render_hand_skeleton_from_bbox(lm_img, bbox, IMG_SIZE)
+                            img_out = skeleton_img
+                        else:
+                            img_out = cv2.resize(crop, (IMG_SIZE, IMG_SIZE), interpolation=cv2.INTER_AREA)
+
                         img_path = os.path.join(img_dir, f"{filename}.jpg")
-                        cv2.imwrite(img_path, skeleton_img)
+                        cv2.imwrite(img_path, img_out)
 
                     # Sauvegarde des landmarks normalisés
                     if SAVE_FORMAT in ("both", "landmarks") and lm_norm is not None:
