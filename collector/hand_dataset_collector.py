@@ -17,7 +17,8 @@ import mediapipe as mp
 
 # Chemins et classes
 DATASET_ROOT = "./data/HandGestures"
-CLASS_NAMES = ["ThumbUp", "ThumbDown"]  # ou None pour auto-découverte
+# Liste des classes de gestes : left, right, stop, go
+CLASS_NAMES = ["left", "right", "stop", "go"]  # ou None pour auto-découverte
 
 # Caméra et capture
 CAMERA_INDEX = 0
