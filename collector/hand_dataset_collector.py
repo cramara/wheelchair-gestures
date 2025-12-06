@@ -22,7 +22,7 @@ CLASS_NAMES = ["left", "right", "stop", "go"]  # ou None pour auto-découverte
 
 # Caméra et capture
 CAMERA_INDEX = 0
-MIRROR = False
+MIRROR = True
 
 # Sauvegarde (logique 3: landmarks uniquement par défaut)
 IMG_SIZE = 224
